@@ -88,7 +88,7 @@ leaflet(width = "100%", height = "350px") %>% addTiles() %>% setView(lng = -88, 
     options = WMSTileOptions(format = "image/png", transparent = TRUE, opacity = 0.4), group = "1345_113 (served in EPSG:3857)") %>%
    addLayersControl(
     overlayGroups = c("1343_38 (lacks EPSG:3857)", "1345_113 (served in EPSG:3857)"),
-    options = layersControlOptions(collapsed = FALSE)) %>% hideGroup("1345_113 (served in EPSG:3857)")
+    options = layersControlOptions(collapsed = FALSE))
 ```
 
 ---
