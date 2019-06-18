@@ -1,0 +1,206 @@
+---
+title: "Which Web Map Services Work in Web Maps?"
+author: Adam Sisco and Kane Cook
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(leaflet)
+```
+
+> W3C's [Spatial Data on the Web Best Practices](https://www.w3.org/TR/sdw-bp/) states that geospatial data (i.e., data about things located relative to the Earth) should, at a minimum, be provided in a global coordinate reference system; for raster data, this should be Web Mercator (EPSG:3857).
+
+## {.tabset .tabset-fade}
+
+### NASA
+
+#### NASA EOSDIS GIBS
+[GetCapabilities](https://gibs.earthdata.nasa.gov/wms/epsg3857/best/wms.cgi?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.3.0)  
+Layer name: `MODIS_Terra_CorrectedReflectance_TrueColor`  
+Notes: Service supports EPSG:3857
+```{r gibs}
+leaflet(width = "100%", height = "350px") %>% addTiles() %>% setView(lng = -70, lat = 30, zoom = 3) %>%
+  addWMSTiles(
+    "https://gibs.earthdata.nasa.gov/wms/epsg3857/best/wms.cgi",
+    layers = "MODIS_Terra_CorrectedReflectance_TrueColor",
+    options = WMSTileOptions(format = "image/png", transparent = TRUE, time = "2018-01-04"))
+```
+
+---
+
+#### SEDAC
+[GetCapabilities](https://sedac.ciesin.columbia.edu/geoserver/ows?service=WMS&version=1.3.0&request=GetCapabilities)  
+Layer name: `gpw-v4:gpw-v4-population-density-adjusted-to-2015-unwpp-country-totals_2020`  
+Notes: Service supports EPSG:3857
+```{r sedac}
+leaflet(width = "100%", height = "350px") %>% addTiles() %>% setView(lng = 80, lat = 20, zoom = 3) %>%
+  addWMSTiles(
+    "https://sedac.ciesin.columbia.edu/geoserver/ows",
+    layers = "gpw-v4:gpw-v4-population-density-adjusted-to-2015-unwpp-country-totals_2020",
+    options = WMSTileOptions(format = "image/png", transparent = TRUE, opacity = 0.5))
+```
+
+---
+
+#### NASA NEO <span style="color:red">(Does not render; lacks EPSG:3857 support)</span>
+[GetCapabilities](https://neo.sci.gsfc.nasa.gov/wms/wms?version=1.3.0&service=WMS&request=GetCapabilities)  
+Layer name: `MYD28M`  
+Notes: No support for EPSG:3857
+```{r neo}
+leaflet(width = "100%", height = "350px") %>% addTiles() %>% setView(lng = 0, lat = 20, zoom = 2) %>%
+  addWMSTiles(
+    "https://neo.sci.gsfc.nasa.gov/wms/wms",
+    layers = "MYD28M",
+    options = WMSTileOptions(format = "image/png", transparent = TRUE))
+```
+
+---
+
+#### GES DISC AIRS
+[GetCapabilities](https://disc1.gesdisc.eosdis.nasa.gov/daac-bin/wms_airs?service=WMS&version=1.3.0&request=GetCapabilities)  
+Layer name: `AIRX3STM_TOTH2OVAP_A`  
+Notes: Service supports EPSG:3857
+```{r airs}
+leaflet(width = "100%", height = "350px") %>% addTiles() %>% setView(lng = 0, lat = 20, zoom = 2) %>%
+  addWMSTiles(
+    "https://disc1.gesdisc.eosdis.nasa.gov/daac-bin/wms_airs",
+    layers = "AIRX3STM_TOTH2OVAP_A",
+    options = WMSTileOptions(format = "image/png", transparent = TRUE, opacity = 0.4))
+```
+
+---
+
+#### ORNL DAAC <span style="color:red">(Scattered support for EPSG:3857)</span>
+[GetCapabilities](https://webmap.ornl.gov/ogcbroker/wms?&service=WMS&version=1.1.1&request=GetCapabilities)  
+Layer name: `1345_113` (served in EPSG:3857) and `1343_38` (lacks EPSG:3857)  
+Notes: Service has scattered support for EPSG:3857
+```{r ornl}
+leaflet(width = "100%", height = "350px") %>% addTiles() %>% setView(lng = -88, lat = 33, zoom = 5) %>%
+  addWMSTiles(
+    "https://webmap.ornl.gov/ogcbroker/wms",
+    layers = "1343_38",
+    options = WMSTileOptions(format = "image/png", transparent = TRUE, opacity = 0.4), group = "1343_38 (lacks EPSG:3857)") %>%
+  addWMSTiles(
+    "https://webmap.ornl.gov/ogcbroker/wms",
+    layers = "1345_113",
+    options = WMSTileOptions(format = "image/png", transparent = TRUE, opacity = 0.4), group = "1345_113 (served in EPSG:3857)") %>%
+   addLayersControl(
+    overlayGroups = c("1343_38 (lacks EPSG:3857)", "1345_113 (served in EPSG:3857)"),
+    options = layersControlOptions(collapsed = FALSE)) %>% hideGroup("1345_113 (served in EPSG:3857)")
+```
+
+---
+
+#### GES DISC OMI <span style="color:red">(Does not render; lacks EPSG:3857 support)</span>
+[GetCapabilities](https://disc1.gesdisc.eosdis.nasa.gov/daac-bin/wms_omi?service=WMS&version=1.3.0&request=GetCapabilities)  
+Layer name: `OMTO3d_Column_Amount_O3`  
+Notes: No support for EPSG:3857
+```{r omi}
+leaflet(width = "100%", height = "350px") %>% addTiles() %>% setView(lng = 0, lat = 20, zoom = 2) %>%
+  addWMSTiles(
+    "https://disc1.gesdisc.eosdis.nasa.gov/daac-bin/wms_omi",
+    layers = "OMTO3d_Column_Amount_O3",
+    options = WMSTileOptions(format = "image/png", transparent = TRUE))
+```
+
+---
+
+#### GES DISC NRT AIRS <span style="color:red">(Does not render; lacks EPSG:3857 support)</span>
+[GetCapabilities](https://disc1.gesdisc.eosdis.nasa.gov/daac-bin/wms_airsnrt?service=WMS&version=1.3.0&request=GetCapabilities)  
+Layer name: `AIRS_RH850_A`  
+Notes: No support for EPSG:3857
+```{r airsNRT}
+leaflet(width = "100%", height = "350px") %>% addTiles() %>% setView(lng = 0, lat = 20, zoom = 2) %>%
+  addWMSTiles(
+    "https://disc1.gesdisc.eosdis.nasa.gov/daac-bin/wms_airsnrt",
+    layers = "AIRS_RH850_A",
+    options = WMSTileOptions(format = "image/png", transparent = TRUE))
+```
+
+---
+
+#### PO.DAAC THREDDS WMS
+[GetCapabilities](https://thredds.jpl.nasa.gov/thredds/wms/ncml_aggregation/OceanTemperature/modis/terra/11um/4km/aggregate__MODIS_TERRA_L3_SST_THERMAL_MONTHLY_4KM_DAYTIME_V2014.0.ncml?service=WMS&version=1.3.0&request=GetCapabilities)  
+Layer name: `sst`  
+Notes: Service supports EPSG:3857
+```{r podaac}
+leaflet(width = "100%", height = "350px") %>% addTiles() %>% setView(lng = 0, lat = 20, zoom = 2) %>%
+  addWMSTiles(
+    "https://thredds.jpl.nasa.gov/thredds/wms/ncml_aggregation/OceanTemperature/modis/terra/11um/4km/aggregate__MODIS_TERRA_L3_SST_THERMAL_MONTHLY_4KM_DAYTIME_V2014.0.ncml",
+    layers = "sst",
+    options = WMSTileOptions(format = "image/png", transparent = TRUE))
+```
+
+---
+
+#### NASA FIRMS
+[GetCapabilities](https://firms.modaps.eosdis.nasa.gov/wms/?SERVICE=WMS&VERSION=1.1.1&REQUEST=GETCAPABILITIES)  
+Layer name: `fires_modis_24`  
+Notes: Service supports EPSG:3857
+```{r firms}
+firms_key <- readLines("firms-map-key.txt")
+
+leaflet(width = "100%", height = "350px") %>% addTiles() %>% setView(lng = 0, lat = 20, zoom = 2) %>%
+  addWMSTiles(
+    "https://firms.modaps.eosdis.nasa.gov/wms/",
+    layers = "fires_modis_24",
+    options = WMSTileOptions(format = "image/png", transparent = TRUE, map_key=firms_key))
+```
+
+### Other
+
+#### NLCD
+[GetCapabilities](https://www.mrlc.gov/geoserver/mrlc_display/NLCD_2016_Land_Cover_L48/wms?service=WMS&request=GetCapabilities)  
+Layer name: `NLCD_2016_Land_Cover_L48`  
+Notes: Service supports EPSG:3857
+```{r nlcd}
+leaflet(width = "100%", height = "350px") %>% addTiles() %>% setView(lng = -99, lat = 38.5, zoom = 4) %>%
+  addWMSTiles(
+    "https://www.mrlc.gov/geoserver/mrlc_display/NLCD_2016_Land_Cover_L48/wms",
+    layers = "NLCD_2016_Land_Cover_L48",
+    options = WMSTileOptions(format = "image/png", transparent = TRUE))
+```
+
+---
+
+#### U.S Drought Monitor
+[GetCapabilities](http://ndmc-001.unl.edu:8080/cgi-bin/mapserv.exe?map=/ms4w/apps/usdm/service/usdm_20120821_wms.map&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetCapabilities)  
+Layer name: `usdm20120821`  
+Notes: Service supports EPSG:3857
+```{r drought}
+leaflet(width = "100%", height = "350px") %>% addTiles() %>% setView(lng = -99, lat = 38.5, zoom = 4) %>%
+  addWMSTiles(
+    "http://ndmc-001.unl.edu:8080/cgi-bin/mapserv.exe?map=/ms4w/apps/usdm/service/usdm_20120821_wms.map",
+    layers = "usdm20120821",
+    options = WMSTileOptions(format = "image/png", transparent = TRUE, opacity = 0.5))
+```
+
+---
+
+#### NOAA nowCOAST
+[GetCapabilities](https://nowcoast.noaa.gov/arcgis/services/nowcoast/analysis_meteohydro_sfc_qpe_time/MapServer/WMSServer?request=GetCapabilities&service=WMS)  
+Layer name: `9`  
+Notes: Service supports EPSG:3857
+```{r nowcoast}
+leaflet(width = "100%", height = "350px") %>% addTiles() %>% setView(lng = -99, lat = 38.5, zoom = 4) %>%
+  addWMSTiles(
+    "https://nowcoast.noaa.gov/arcgis/services/nowcoast/analysis_meteohydro_sfc_qpe_time/MapServer/WMSServer",
+    layers = "9",
+    options = WMSTileOptions(format = "image/png", transparent = TRUE, opacity = 0.5))
+```
+
+---
+
+#### U.S Fish and Wildlife Service
+[GetCapabilities](https://www.fws.gov/wetlands/arcgis/services/Wetlands_Raster/ImageServer/WMSServer?request=GetCapabilities&service=WMS)  
+Layer name: `0`  
+Notes: Service supports EPSG:3857
+```{r wetlands}
+leaflet(width = "100%", height = "350px") %>% addTiles() %>% setView(lng = -90, lat = 30, zoom = 6) %>%
+  addWMSTiles(
+    "https://www.fws.gov/wetlands/arcgis/services/Wetlands_Raster/ImageServer/WMSServer",
+    layers = "0",
+    options = WMSTileOptions(format = "image/png", transparent = TRUE, opacity = 0.75))
+```
